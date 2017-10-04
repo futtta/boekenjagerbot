@@ -1,0 +1,11 @@
+CREATE TABLE `gemeentes` (
+  `id` mediumint(4) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2904,
+  `zipcode` mediumint(4) UNSIGNED NOT NULL,
+  `name` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `subscribers`{
+   `id` mediumint(4) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2904,
+   `subscriberid` varchar(255) NOT NULL, 
+   `gemeenteid` mediumint(4) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4; 
