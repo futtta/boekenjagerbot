@@ -12,7 +12,18 @@ $botmanConfig = array();
 require_once ("inc/config.php");
 require_once ("vendor/autoload.php");
 
-// create an instance
+//Init Database
+$database = new \Medoo\Medoo(
+    array(
+        "database_type" => "mysql",
+        "database_name" => $dbName,
+        "server" => $dbHost,
+        "username" => $dbUsername,
+        "password" => $dbPassword
+    )
+);
+
+//Init Botman
 $botman = BotManFactory::create($botmanConfig);
 $botman->verifyServices($botmanVerify);
 
@@ -20,8 +31,20 @@ $botman->verifyServices($botmanVerify);
     $bot->reply("Your name is: ".$name);
 });*/
 
+$botman->hears('Hello', function($bot) {
+    $user = $bot->getUser();
+    $bot->reply('Hello '.$user->getFirstName().' '.$user->getLastName());
+    $bot->reply('Your username is: '.$user->getUsername());
+    $bot->reply('Your ID is: '.$user->getId());
+});
+
 $botman->hears("abonneer op {naam}", function ($bot, $naam) {
-   $bot->reply("U bent geabonneerd op gemeente ".$naam);
+    global $database;
+
+    //In table gemeentes zoeken op row
+    //Indien meer dan 1 gevonden, eerste 5 mogelijkheden geven
+    //Indien geen gevonden error geven
+    $bot->reply("U bent geabonneerd op gemeente ".$naam);
 });
 
 $botman->listen();
