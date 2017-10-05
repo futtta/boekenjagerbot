@@ -11,10 +11,9 @@ $dbUsername = "boekenzoekers";
 //Database password
 $dbPassword = "databasepassword";
 
-//FB Developer
-//https://developers.facebook.com/
-
-//App ID
-$appID = "";
-//App Secret
-$appSecret = "";
+//BotManConfig
+$botmanConfig = array(
+    "facebook_token" => "YOUR-FACEBOOK-PAGE-TOKEN-HERE",
+    "facebook_app_secret" => "YOUR-FACEBOOK-APP-SECRET-HERE"
+);
+$botmanVerify = "VERIFYTOKENFROMFACEBOOK";

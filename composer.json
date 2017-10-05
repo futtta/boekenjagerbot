@@ -1,6 +1,6 @@
 {
     "require": {
-        "botman/botman": "^2.1",
+        "botman/botman": "^1.5",
 		"catfan/Medoo": "^1.4"
     }
 }
