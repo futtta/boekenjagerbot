@@ -27,17 +27,6 @@ $database = new Medoo\Medoo(
 $botman = BotManFactory::create($botmanConfig);
 $botman->verifyServices($botmanVerify);
 
-/*$botman->hears("call me {name}", function ($bot, $name) {
-    $bot->reply("Your name is: ".$name);
-});*/
-
-$botman->hears('Hello', function($bot) {
-    $user = $bot->getUser();
-    $bot->reply('Hello '.$user->getFirstName().' '.$user->getLastName());
-    $bot->reply('Your username is: '.$user->getUsername());
-    $bot->reply('Your ID is: '.$user->getId());
-});
-
 $botman->hears("abonneer op {naam}", function ($bot, $naam) {
     global $database;
 
@@ -49,8 +38,8 @@ $botman->hears("abonneer op {naam}", function ($bot, $naam) {
     } elseif($amount == 1) {
         $data = $database->get("gemeentes", "*",  array("name" => $naam));
 
-        if($database->count("gemeentes", "*", array("subscriberid" => $user->getId(), "gemeenteid" => $data["id"])) == 0) {
-            $database->insert("gemeentes", array(
+        if($database->count("subscribers", "*", array("subscriberid" => $user->getId(), "gemeenteid" => $data["id"])) == 0) {
+            $database->insert("subscribers", array(
                 "subscriberid" => $user->getId(),
                 "gemeenteid" => $data["id"]
             ));
@@ -80,10 +69,55 @@ $botman->hears("abonneer op {naam}", function ($bot, $naam) {
 
         $bot->reply($reply);
     }
+});
 
-    //In table gemeentes zoeken op row
-    //Indien meer dan 1 gevonden, eerste 5 mogelijkheden geven
-    //Indien geen gevonden error geven
+$botman->hears("de-abonneer op {naam}", function ($bot, $naam) {
+    global $database;
+    $user = $bot->getUser();
+    $amount = $database->count("gemeentes", "*", array("name" => $naam));
+
+    if($amount == 0) {
+        $bot->reply("Er zijn geen gemeentes met deze naam gevonden");
+    } elseif($amount == 1) {
+        $data = $database->get("gemeentes", "*",  array("name" => $naam));
+
+        if($database->count("subscribers", "*", array("subscriberid" => $user->getId(), "gemeenteid" => $data["id"])) == 1) {
+            $database->delete("subscribers", array("subscriberid" => $user->getId(), "gemeenteid" => $data["id"]));
+
+            $bot->reply("U bent gedeabonneerd op ".$data["name"]);
+        } else {
+            $bot->reply("U bent niet geabonneerd op ".$data["name"]);
+        }
+
+    } else {
+        $reply = "Kies uit deze gemeentes: ";
+
+        $data = $database->select("gemeentes", "*",  array("name[~]" => $naam));
+
+        foreach($data as $key => $row){
+            if($key > 0){
+                $reply .= ", ";
+            }
+
+            $reply .= $row["name"];
+
+            if($key > 5){
+                $reply .= "...";
+                break;
+            }
+        }
+
+        $bot->reply($reply);
+    }
+});
+
+$botman->fallback(function($bot){
+    $user = $bot->getUser();
+
+    $bot->reply("Hallo ".$user->getFirstName()." ".$user->getLastName());
+    $bot->reply("Welkom bij de boekenjagers, hier kunt u zelf aboneren op boeken in jouw regio");
+    $bot->reply("Om dit te stuurt u dit naar mij: \"abonneer op <gemeentenaam>\" ");
+    $bot->reply("Of als u geen zin meer heeft in boekjes \"de-abonneer op <gemeentenaam>\"");
 });
 
 $botman->listen();

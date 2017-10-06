@@ -1,3 +1,4 @@
+<?php
 /*
 * haal alle unique gemeenteid's uit de subscribers tabel (-> A)
 * voor elke gemeenteid in (A):
@@ -6,3 +7,6 @@
 * - bevraag de boekenzoekers API (gemeente=A2&output=json&timeFrom=<timestamp laatste check>) (-> C)
 * - voor elk resultaat (C) stuur een bericht naar elke subscriber (B) 
 */
+
+require_once ("inc/config.php");
+require __DIR__ . "/vendor/autoload.php";
