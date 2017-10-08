@@ -115,8 +115,8 @@ $botman->fallback(function($bot){
     $user = $bot->getUser();
 
     $bot->reply("Hallo ".$user->getFirstName()." ".$user->getLastName());
-    $bot->reply("Welkom bij de boekenjagers, hier kunt u zelf aboneren op boeken in jouw regio");
-    $bot->reply("Om dit te stuurt u dit naar mij: \"abonneer op <gemeentenaam>\" ");
+    $bot->reply("Welkom bij de boekenjagers, hier kunt u uzelf aboneren op boeken in jouw regio");
+    $bot->reply("Om dit te doen stuurt u dit naar mij: \"abonneer op <gemeentenaam>\" ");
     $bot->reply("Of als u geen zin meer heeft in boekjes \"de-abonneer op <gemeentenaam>\"");
 });
 
