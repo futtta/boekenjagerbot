@@ -5,7 +5,11 @@
 * dit wordt weggeschreven in de subscribers tabel met subscriberid (= facebook id) en gemeente id (= gemeente.id)
 */
 
-use Mpociot\BotMan\BotManFactory;
+
+use BotMan\BotMan\BotManFactory;
+use BotMan\BotMan\Cache\DoctrineCache;
+use BotMan\BotMan\Cache\Psr6Cache;
+use BotMan\BotMan\Drivers\DriverManager;
 
 $botmanConfig = array();
 
@@ -23,14 +27,18 @@ $database = new Medoo\Medoo(
     )
 );
 
+$memcache = new Memcache();
+$memcache->connect("localhost", 11211);
+
+$cacheDriver = new \Doctrine\Common\Cache\MemcacheCache();
+$cacheDriver->setMemcache($memcache);
+
 //Init Botman
-$botman = BotManFactory::create($botmanConfig);
-$botman->verifyServices($botmanVerify);
+DriverManager::loadDriver(\BotMan\Drivers\Facebook\FacebookDriver::class);
+$botman = BotManFactory::create($botmanConfig, new DoctrineCache($cacheDriver));
 
 $botman->hears("abonneer op {naam}", function ($bot, $naam) {
     global $database;
-
-    $user = $bot->getUser();
     $amount = $database->count("gemeentes", "*", array("name" => $naam));
 
     if($amount == 0) {
@@ -38,9 +46,9 @@ $botman->hears("abonneer op {naam}", function ($bot, $naam) {
     } elseif($amount == 1) {
         $data = $database->get("gemeentes", "*",  array("name" => $naam));
 
-        if($database->count("subscribers", "*", array("subscriberid" => $user->getId(), "gemeenteid" => $data["id"])) == 0) {
+        if($database->count("subscribers", "*", array("subscriberid" => $bot->getUser()->getId(), "gemeenteid" => $data["id"])) == 0) {
             $database->insert("subscribers", array(
-                "subscriberid" => $user->getId(),
+                "subscriberid" => $bot->getUser()->getId(),
                 "gemeenteid" => $data["id"]
             ));
 
@@ -73,7 +81,7 @@ $botman->hears("abonneer op {naam}", function ($bot, $naam) {
 
 $botman->hears("de-abonneer op {naam}", function ($bot, $naam) {
     global $database;
-    $user = $bot->getUser();
+
     $amount = $database->count("gemeentes", "*", array("name" => $naam));
 
     if($amount == 0) {
@@ -81,8 +89,8 @@ $botman->hears("de-abonneer op {naam}", function ($bot, $naam) {
     } elseif($amount == 1) {
         $data = $database->get("gemeentes", "*",  array("name" => $naam));
 
-        if($database->count("subscribers", "*", array("subscriberid" => $user->getId(), "gemeenteid" => $data["id"])) == 1) {
-            $database->delete("subscribers", array("subscriberid" => $user->getId(), "gemeenteid" => $data["id"]));
+        if($database->count("subscribers", "*", array("subscriberid" =>$bot->getUser()->getId(), "gemeenteid" => $data["id"])) == 1) {
+            $database->delete("subscribers", array("subscriberid" => $bot->getUser()->getId(), "gemeenteid" => $data["id"]));
 
             $bot->reply("U bent gedeabonneerd op ".$data["name"]);
         } else {
@@ -112,6 +120,8 @@ $botman->hears("de-abonneer op {naam}", function ($bot, $naam) {
 });
 
 $botman->fallback(function($bot){
+    global $database,$botman;
+
     $user = $bot->getUser();
 
     $bot->reply("Hallo ".$user->getFirstName()." ".$user->getLastName());

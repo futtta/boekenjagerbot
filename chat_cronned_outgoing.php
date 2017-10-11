@@ -8,9 +8,9 @@
 * - voor elk resultaat (C) stuur een bericht naar elke subscriber (B) 
 */
 
-use Mpociot\BotMan\BotManFactory;
-use Mpociot\BotMan\Drivers\FacebookDriver;
-use Mpociot\BotMan\Messages\Message;
+use BotMan\BotMan\BotManFactory;
+use BotMan\BotMan\Cache\DoctrineCache;
+use BotMan\BotMan\Drivers\DriverManager;
 
 $botmanConfig = array();
 
@@ -28,9 +28,15 @@ $database = new Medoo\Medoo(
     )
 );
 
+$memcache = new Memcache();
+$memcache->connect("localhost", 11211);
+
+$cacheDriver = new \Doctrine\Common\Cache\MemcacheCache();
+$cacheDriver->setMemcache($memcache);
+
 //Init Botman
-$botman = BotManFactory::create($botmanConfig);
-$botman->verifyServices($botmanVerify);
+DriverManager::loadDriver(\BotMan\Drivers\Facebook\FacebookDriver::class);
+$botman = BotManFactory::create($botmanConfig, new DoctrineCache($cacheDriver));
 
 
 $data = $database->query("SELECT distinct `gemeenteid` FROM `subscribers`;")->fetchAll();
@@ -43,8 +49,9 @@ foreach($data as $row) {
         foreach($users as $user){
             if(is_array($apiData)) {
                 foreach ($apiData as $apiRow) {
-                    $message = Message::create("Er is een boek gedropt:" . $apiRow["fbURL"]);
-                    $botman->say($message, $user[0],FacebookDriver::class);
+                    echo "Er is een boek gedropt:" . $apiRow["fbURL"];
+                    $botman->say("Er is een boek gedropt:" . $apiRow["fbURL"], $user[0]);
+                    break;
                 }
             }
         }

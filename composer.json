@@ -1,6 +1,8 @@
 {
     "require": {
-        "botman/botman": "^1.5",
-		"catfan/Medoo": "^1.4"
+        "botman/botman": "^2.0",
+		"catfan/Medoo": "^1.4",
+        "botman/driver-facebook": "^1.2",
+        "doctrine/common": "^2.7"
     }
 }
