@@ -11,6 +11,7 @@
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Cache\DoctrineCache;
 use BotMan\BotMan\Drivers\DriverManager;
+use BotMan\Drivers\Facebook\FacebookDriver;
 
 $botmanConfig = array();
 
@@ -50,7 +51,7 @@ foreach($data as $row) {
             if(is_array($apiData)) {
                 foreach ($apiData as $apiRow) {
                     echo "Er is een boek gedropt:" . $apiRow["fbURL"];
-                    $botman->say("Er is een boek gedropt:" . $apiRow["fbURL"], $user[0]);
+                    $botman->say("Er is een boek gedropt:" . $apiRow["fbURL"], $user, FacebookDriver::class);
                     break;
                 }
             }
