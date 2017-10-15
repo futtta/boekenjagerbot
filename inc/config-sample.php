@@ -16,7 +16,16 @@ $dbPassword = "databasepassword";
 
 //BotManConfig
 $botmanConfig = array(
-    "facebook_token" => "YOUR-FACEBOOK-PAGE-TOKEN-HERE",
-    "facebook_app_secret" => "YOUR-FACEBOOK-APP-SECRET-HERE"
+    "facebook" => array(
+        "token" => "YOUR-FACEBOOK-PAGE-TOKEN-HERE",
+        "app_secret" => "YOUR-FACEBOOK-APP-SECRET-HERE",
+        "verification" => "VERIFYTOKENFROMFACEBOOK"
+    )
 );
-$botmanVerify = "VERIFYTOKENFROMFACEBOOK";
+
+//Caching server type
+//redis of memcache of none
+$cacheType = "memcache";
+
+$memcacheConfig = array("host" => "localhost", "port" => 11211);
+$redisConfig = array("host" => "localhost", "port" => 6379);

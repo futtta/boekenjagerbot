@@ -29,11 +29,28 @@ $database = new Medoo\Medoo(
     )
 );
 
-$memcache = new Memcache();
-$memcache->connect("localhost", 11211);
+//Init Caching
+switch ($cacheType) {
+    case "memcache":
+        $memcache = new Memcache();
+        $memcache->connect($memcacheConfig["host"], $memcacheConfig["port"]);
 
-$cacheDriver = new \Doctrine\Common\Cache\MemcacheCache();
-$cacheDriver->setMemcache($memcache);
+        $cacheDriver = new \Doctrine\Common\Cache\MemcacheCache();
+        $cacheDriver->setMemcache($memcache);
+        break;
+
+    case "redis":
+        $redis = new Redis();
+        $redis->connect($redisConfig["host"], $redisConfig["port"]);
+
+        $cacheDriver = new \Doctrine\Common\Cache\RedisCache();
+        $cacheDriver->setRedis($redis);
+        break;
+
+    case "none":
+        $cacheDriver = new \Doctrine\Common\Cache\ArrayCache();
+        break;
+}
 
 //Init Botman
 DriverManager::loadDriver(\BotMan\Drivers\Facebook\FacebookDriver::class);
