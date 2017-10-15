@@ -2,6 +2,9 @@
 /* Config voorbeeld */
 //MySQL Database
 
+//extra debug output in cronjob
+$debug = true;
+
 //Database host
 $dbHost = "localhost";
 //Database naam

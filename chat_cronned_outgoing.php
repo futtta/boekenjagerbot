@@ -54,7 +54,9 @@ foreach($data as $row) {
         foreach($users as $user){
             if(is_array($apiData)) {
                 foreach ($apiData as $apiRow) {
-                    echo "Er is een boek gedropt: " . $apiRow["fbURL"]."<br />";
+                    if($debug) {
+                        echo "Er is een boek gedropt: " . $apiRow["fbURL"] . "(".$user.")<br />";
+                    }
                     $botman->say("Er is een boek gedropt: " . $apiRow["fbURL"], $user, FacebookDriver::class);
                     break;
                 }
