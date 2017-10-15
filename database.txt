@@ -2916,7 +2916,8 @@ INSERT INTO `gemeentes` (`id`, `zipcode`, `name`) VALUES
 (2900, 8550, 'Zwevegem'),
 (2901, 8750, 'Zwevezele'),
 (2902, 9052, 'Zwijnaarde'),
-(2903, 2070, 'Zwijndrecht');
+(2903, 2070, 'Zwijndrecht'),
+(2904, 9999, '1507468666');
 
 ALTER TABLE `gemeentes`
   MODIFY `id` mediumint(4) UNSIGNED NOT NULL AUTO_INCREMENT;

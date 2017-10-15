@@ -39,19 +39,23 @@ $cacheDriver->setMemcache($memcache);
 DriverManager::loadDriver(\BotMan\Drivers\Facebook\FacebookDriver::class);
 $botman = BotManFactory::create($botmanConfig, new DoctrineCache($cacheDriver));
 
+//Update Lastcheck Time
+$time = $database->get("gemeentes", "name", array("zipcode" => 9999));
+$database->update("gemeentes", array("name" => time()), array("zipcode" => 9999));
+
 
 $data = $database->query("SELECT distinct `gemeenteid` FROM `subscribers`;")->fetchAll();
 foreach($data as $row) {
     $gemeentes = $database->select("gemeentes", "name", array("id" => $row[0]));
     foreach($gemeentes as $gemeente){
-        $apiData = getDataFROMAPI($gemeente[0]);
+        $apiData = getDataFROMAPI($gemeente,$time);
 
         $users = $database->select("subscribers", "subscriberid", array("gemeenteid" => $row[0]));
         foreach($users as $user){
             if(is_array($apiData)) {
                 foreach ($apiData as $apiRow) {
-                    echo "Er is een boek gedropt:" . $apiRow["fbURL"];
-                    $botman->say("Er is een boek gedropt:" . $apiRow["fbURL"], $user, FacebookDriver::class);
+                    echo "Er is een boek gedropt: " . $apiRow["fbURL"]."<br />";
+                    $botman->say("Er is een boek gedropt: " . $apiRow["fbURL"], $user, FacebookDriver::class);
                     break;
                 }
             }
@@ -64,9 +68,9 @@ foreach($data as $row) {
  * @param $gemeente string Gemeentenaam
  * @return array Data from API
  */
-function getDataFROMAPI($gemeente)
+function getDataFROMAPI($gemeente,$time)
 {
-    return json_decode(fetchUrl("https://boekenzoekers.thunderbug.be/?output=json&gemeente=".$gemeente."&timeFrom=1507468666"), true);
+    return json_decode(fetchUrl("https://boekenzoekers.thunderbug.be/?output=json&gemeente=".$gemeente."&timeFrom=".$time), true);
 }
 
 /**

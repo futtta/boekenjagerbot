@@ -8,7 +8,6 @@
 
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Cache\DoctrineCache;
-use BotMan\BotMan\Cache\Psr6Cache;
 use BotMan\BotMan\Drivers\DriverManager;
 
 $botmanConfig = array();
