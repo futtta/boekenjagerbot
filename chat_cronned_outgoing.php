@@ -79,8 +79,11 @@ foreach($data as $row) {
 }
 
 //Update Time
-$database->update("gemeentes", array("name" => time()), array("zipcode" => 9999));
+$database->update("gemeentes", array("name" => $newTime), array("zipcode" => 9999));
 
+if($debug) {
+    print_r($newTime);
+}
 /**
  * Get Data from the API
  * @param $gemeente string Gemeentenaam
