@@ -130,8 +130,6 @@ $botman->hears("de-abonneer op {naam}", function ($bot, $naam) {
 });
 
 $botman->fallback(function($bot){
-    global $database,$botman;
-
     $user = $bot->getUser();
 
     $bot->reply("Hallo ".$user->getFirstName()." ".$user->getLastName());

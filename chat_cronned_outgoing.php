@@ -48,10 +48,9 @@ switch ($cacheType) {
 DriverManager::loadDriver(\BotMan\Drivers\Facebook\FacebookDriver::class);
 $botman = BotManFactory::create($botmanConfig, new DoctrineCache($cacheDriver));
 
-//Update Lastcheck Time
+//get Lastcheck Time
 $time = $database->get("gemeentes", "name", array("zipcode" => 9999));
-$database->update("gemeentes", array("name" => time()), array("zipcode" => 9999));
-
+$newTime = $time;
 
 $data = $database->query("SELECT distinct `gemeenteid` FROM `subscribers`;")->fetchAll();
 foreach($data as $row) {
@@ -64,15 +63,23 @@ foreach($data as $row) {
             if(is_array($apiData)) {
                 foreach ($apiData as $apiRow) {
                     if($debug) {
-                        echo "Er is een boek gedropt: " . $apiRow["fbURL"] . "(".$user.")<br />";
+                        echo "Er is een boek gedropt" . $gemeente . ": " . $apiRow["fbURL"] . "(".$user.")<br />";
                     }
-                    $botman->say("Er is een boek gedropt: " . $apiRow["fbURL"], $user, FacebookDriver::class);
-                    break;
+
+                    $botman->say("Er is een boek gedropt in " . $gemeente . ": " . $apiRow["fbURL"], $user, FacebookDriver::class);
+
+                    //Check for time
+                    if($newTime < $apiRow["date"]){
+                        $newTime = $apiRow["date"];
+                    }
                 }
             }
         }
     }
 }
+
+//Update Time
+$database->update("gemeentes", array("name" => time()), array("zipcode" => 9999));
 
 /**
  * Get Data from the API
